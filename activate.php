@@ -17,6 +17,12 @@ db_connect();
 $success = auth_activate_by_cookie( $_GET['code'] );
 if( $success )
 {
+	$result = setcookie( "bggcookie", $_GET['code'] );
+	if( $result === FALSE )
+	{
+		error_report("An error has occurred while setting the cookie.");
+		exit();
+	}
 	header("Location: " . $config['http']['base_url']);
 ?>
 	You've been authenticated and will be redirected to the

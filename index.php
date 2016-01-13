@@ -1,10 +1,14 @@
 <?php
 
-$user_is_authenticated = false;
+require_once("db.inc.php");
 
-if( $user_is_authenticated )
+db_connect();
+
+$user = db_get_user_by_cookie( $_COOKIE['bggcookie'] );
+
+if( $user )
 {
-	include "index.authed.php";
+	include "home.php";
 }
 else
 {

@@ -16,7 +16,7 @@ function db_connect()
 	return $dbh;
 }
 
-function db_get_user_by_cookie( $key )
+function db_get_user_by_cookie( $cookie )
 {
 	global $dbh;
 	
@@ -36,7 +36,9 @@ function db_get_user_by_cookie( $key )
 			return FALSE;
 		}
 
-		return $row['username'];
+		return array(
+			'username' => $row['username']
+		);
 	}
 	else
 	{
@@ -78,7 +80,7 @@ function db_add_auth_request( $bggusername_tainted, $cookie )
 
 	# Delete any old outstanding requests
 	$sth = $dbh->prepare('DELETE FROM authrequests where username=:username');
-	$sth->$result = db_getexecute(array(
+	$result = $sth->execute(array(
 		'username' => $bggusername_tainted
 	));
 
