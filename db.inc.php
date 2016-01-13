@@ -76,6 +76,13 @@ function db_add_auth_request( $bggusername_tainted, $cookie )
 {
 	global $dbh;
 
+	# Delete any old outstanding requests
+	$sth = $dbh->prepare('DELETE FROM authrequests where username=:username');
+	$sth->$result = db_getexecute(array(
+		'username' => $bggusername_tainted
+	));
+
+	# Add the new request
 	$sth = $dbh->prepare('INSERT INTO authrequests' . 
 		'(username,requested_at,cookie) VALUES (:username,:requested_at,:cookie)');
 	$result = $sth->execute(array(
@@ -85,6 +92,114 @@ function db_add_auth_request( $bggusername_tainted, $cookie )
 		));
 
 	return $result;
+}
+
+function db_get_auth_requests_to_send( $limit )
+{
+	global $dbh;
+	
+	$sth = $dbh->prepare('
+		SELECT * 
+			FROM `authrequests`
+			WHERE gm_sent_at IS NULL
+		');
+	$sth->execute();
+
+	$items = array();
+	while( $row = $sth->fetch(PDO::FETCH_ASSOC) )
+	{
+		$item = array(
+			'id' => $row['id'],
+			'username' => $row['username'],
+			'cookie' => $row['cookie']
+		);
+		array_push( $items, $item );
+	}
+
+	return $items;
+}
+
+function db_get_auth_request_by_cookie( $cookie )
+{
+	global $dbh;
+	
+	$sth = $dbh->prepare('
+		SELECT * 
+			FROM `authrequests`
+			WHERE cookie=:cookie
+		');
+	$sth->execute(array(
+		'cookie' => $cookie
+	));
+
+	$items = array();
+	if( $row = $sth->fetch(PDO::FETCH_ASSOC) )
+	{
+		$item = array(
+			'id' => $row['id'],
+			'username' => $row['username'],
+			'cookie' => $row['cookie']
+		);
+		return $item;
+	}
+	else
+	{
+		return FALSE;
+	}
+}
+
+function db_mark_auth_request_as_sent( $id )
+{
+	global $dbh;
+
+	$sth = $dbh->prepare('UPDATE authrequests SET gm_sent_at=:gm_sent_at WHERE id=:id');
+	$result = $sth->execute(array(
+			'gm_sent_at' => time(),
+			'id' => $id
+		));
+
+	return $result;
+}
+
+function db_mark_user_as_authenicated( $bggusername, $cookie )
+{
+	global $dbh;
+	$id = FALSE;
+
+	$sth = $dbh->prepare('
+		SELECT id
+			FROM `users`
+	WHERE username=:username
+		');
+	$sth->bindParam('username', $bggusername, PDO::PARAM_STR);
+	$sth->execute();
+
+	$id = FALSE;
+	if( $row = $sth->fetch(PDO::FETCH_ASSOC) )
+	{
+		$id = $row['id'];
+	}
+
+	$sth = NULL;
+	$params = array(
+		'username' => $bggusername,
+		'cookie' => $cookie,
+	);
+	
+	if( $id === FALSE )
+	{
+		$sth = $dbh->prepare(
+			'INSERT INTO users (username, cookie) VALUES (:username, :cookie)');
+	}
+	else
+	{
+		$sth = $dbh->prepare(
+			'UPDATE users SET username=:username, cookie=:cookie WHERE id=:id');
+		$params['id'] = $id;
+	}
+	$result = $sth->execute( $params );
+
+	return ( $result !== FALSE );
 }
 
 ?>

@@ -24,7 +24,6 @@ function send_geekmails_for_auth_requests()
 		error_report( "Error logging into BGG." );
 		exit();
 	}
-	var_dump($config['bgg']['cookie']);
 
 	foreach( $reqs as $req )
 	{

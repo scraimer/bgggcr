@@ -21,9 +21,6 @@ function http_post( $url, $params, $cookie = NULL )
 		),
 	);
 
-
-	var_dump($options);
-
 	$context = stream_context_create( $options );
 	$stream = fopen( $url, 'r', false, $context );
 

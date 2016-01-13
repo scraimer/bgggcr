@@ -5,7 +5,7 @@ db_connect();
 if( is_user_authenticated() )
 {
 ?>
-Hey, you're already authenticated!. Try reloading the <a href="/">homepage</a>.
+	Hey, you're already authenticated!. Try reloading the <a href="<?=$config['http']['base_url']?>">homepage</a>.
 <?php
 	exit;
 }

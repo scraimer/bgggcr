@@ -1,5 +1,6 @@
 <?php
 require_once("db.inc.php");
+require_once("error.inc.php");
 
 function is_user_authenticated()
 {
@@ -30,6 +31,25 @@ function auth_queue_geekmail( $bggusername_tainted )
 	}
 	
 	return db_add_auth_request( $bggusername_tainted, $cookie );
+}
+
+function auth_activate_by_cookie( $cookie )
+{
+	$result = db_get_auth_request_by_cookie( $cookie );
+	if( $result === FALSE )
+	{
+		error_report("Error: No such cookie is known.");
+		return FALSE;
+	}
+
+	$success = db_mark_user_as_authenicated( $result['username'], $result['cookie'] );
+	if( $success === FALSE )
+	{
+		error_report("Error: Could not mark user as 'authenticated'. Aborting.");
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 ?>

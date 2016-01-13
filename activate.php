@@ -1,5 +1,9 @@
 <?php
 
+require_once("auth.inc.php");
+require_once("db.inc.php");
+
+
 if( !isset($_GET['code']) )
 {
 ?>
@@ -9,10 +13,11 @@ if( !isset($_GET['code']) )
 	exit();
 }
 
+db_connect();
 $success = auth_activate_by_cookie( $_GET['code'] );
 if( $success )
 {
-	header("Location: " . $config['http']['base_url']);
+	//header("Location: " . $config['http']['base_url']);
 ?>
 	You've been authenticated and will be redirected to the
 	<a href="<?=$config['http']['base_url']?>">homepage</a>.
