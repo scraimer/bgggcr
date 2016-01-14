@@ -163,7 +163,7 @@ function db_mark_auth_request_as_sent( $id )
 	return $result;
 }
 
-function db_mark_user_as_authenicated( $bggusername, $cookie )
+function db_mark_user_as_authenicated( $bggusername, $cookie, $auth_req_id )
 {
 	global $dbh;
 	$id = FALSE;
@@ -200,6 +200,18 @@ function db_mark_user_as_authenicated( $bggusername, $cookie )
 		$params['id'] = $id;
 	}
 	$result = $sth->execute( $params );
+
+	# Now the user is authenticated, we can delete the auth request
+	if( $result )
+	{
+		$sth = $dbh->prepare('DELETE FROM authrequests WHERE id=:id');
+		$delete_result = $sth->execute( array( ':id' => $auth_req_id ) );
+		if( $delete_result === FALSE )
+		{
+			$info = $sth->errorInfo();
+			error_report("Warning: There was en error deleting auth request ID=" . $auth_req_id . " (" . $info[2] . "). Until it is deleted, that user cannot re-auth.");
+		}
+	}
 
 	return ( $result !== FALSE );
 }

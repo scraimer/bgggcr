@@ -42,7 +42,7 @@ function auth_activate_by_cookie( $cookie )
 		return FALSE;
 	}
 
-	$success = db_mark_user_as_authenicated( $result['username'], $result['cookie'] );
+	$success = db_mark_user_as_authenicated( $result['username'], $result['cookie'], $result['id'] );
 	if( $success === FALSE )
 	{
 		error_report("Error: Could not mark user as 'authenticated'. Aborting.");
