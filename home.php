@@ -4,8 +4,8 @@ require_once("award.inc.php");
 
 $user = db_get_user_by_cookie( $_COOKIE['bggcookie'] );
 
-$can_award = award_can_user_give( $user['username'] );
-$last_award = award_get_last( $user['username'] );
+$can_award = award_can_user_give( $user['id'] );
+$last_award = award_get_last( $user['id'] );
 
 ?>
 <html>
@@ -28,11 +28,14 @@ if( $last_award )
 if( $can_award )
 {
 ?>
-	<form method="POST" action="award.php">
+	<form method="POST" action="givestar.php">
 		Who do you want to award a star to? Enter their BGG username here:
-		<input type="text" name="recipient" />
+		<input type="text" name="recipient" onkeyup="document.getElementById('profile').src = 'https://boardgamegeek.com/user/' + this.value" />
 		<input type="submit" value="Give Star" />
 	</form>
+
+	Preview:
+	<iframe id="profile" style="width:100%; height: 80%"> </iframe>
 <?php
 }
 else

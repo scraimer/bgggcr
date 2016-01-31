@@ -6,4 +6,10 @@ function error_report( $msg )
 	echo "$msg\n";
 }
 
+function error_report_to_log( $msg )
+{
+	# TODO: actually write this
+	echo "$msg\n";
+}
+
 ?>
