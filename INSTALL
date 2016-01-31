@@ -1,0 +1,15 @@
+1. Create a database
+2. Edit the SQL code in the setup-db.sql to match to its name
+3. Copy 'config-default.inc.php' to 'config.inc.php'
+4. Edit the relevant sections of config.inc.php. In particular:
+		Under 'db'
+			'hostname', 'dbname', 'username', 'password' - should be set to the credentials required to access the DB
+		Under 'http'
+			'base_url' should be set to the URL of your webserver. This for geekmails.
+		Under 'bgg'
+			'username', 'password' - should be set to a user who has BGG privilages to award microbadges, and will be sending the automatic geekmails.
+			'domain' - set this to the preferred domain for all BGG/RPGG/VGG URLs.
+5. Set up a CRON job (or otherwise schedule) the following command to run once every hour:
+		php send-queued-gm-and-mb.php
+6. Try it out!
+
